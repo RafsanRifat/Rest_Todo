@@ -108,6 +108,7 @@
     const csrftoken = getCookie('csrftoken');
 
 
+    activeItem = null
     buildlist()
 
     function buildlist() {
@@ -124,6 +125,14 @@
                     console.log(list[i].title)
                     const item = '<div id="data-row-${i}" class="task-wrapper flex-wrapper"> <div style="flex:7"><span class="title"> ' + list[i].title + ' </span></div> <div style="flex:1"><button class="btn btn-small btn-outline-info edit" >Edit</button></div> <div style="flex:1"><button class="btn btn-small btn-outline-dark delete">-</button></div> </div>';
                     wrapper.innerHTML += item
+
+                }
+
+                for (const i in list) {
+                    var editBtn = document.getElementsByClassName('edit')[i]
+                    editBtn.addEventListener('click', function () {
+                        editItem(list[i])
+                    })
                 }
 
             })
@@ -136,6 +145,10 @@
         e.preventDefault()
         console.log('Form submitted successfully')
         var url = 'http://localhost:8000/api/task-create/'
+        if (activeItem != null) {
+            var url = `http://localhost:8000/api/task-update/${activeItem.id}/`
+            activeItem = null
+        }
         var title = document.getElementById('title').value
         fetch(url, {
             method: 'POST',
@@ -149,6 +162,15 @@
             document.getElementById('form').reset()
         })
     })
+
+
+
+    function editItem(item) {
+        console.log('Item clicked', item)
+        activeItem = item
+        document.getElementById('title').value = activeItem.title
+    }
+
 </script>
 
 
