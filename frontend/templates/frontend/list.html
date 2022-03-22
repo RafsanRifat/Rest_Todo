@@ -89,7 +89,25 @@
 
 
 <script>
-    
+    buildlist()
+
+    function buildlist() {
+        var wrapper = document.getElementById('list-wrapper')
+        var url = 'http://localhost:8000/api/task-list/'
+        fetch(url)
+            .then((resp) => resp.json())
+            .then(function (data) {
+                console.log(data)
+
+                const list = data;
+                for (const i in list) {
+                    console.log(list[i].title)
+                    const item = '<div id="data-row-${i}" class="task-wrapper flex-wrapper"> <div style="flex:7"><span class="title"> '+list[i].title+' </span></div> <div style="flex:1"><button class="btn btn-small btn-outline-info edit" >Edit</button></div> <div style="flex:1"><button class="btn btn-small btn-outline-dark delete">-</button></div> </div>';
+                    wrapper.innerHTML += item
+                }
+
+            })
+    }
 </script>
 
 
