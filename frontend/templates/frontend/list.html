@@ -130,8 +130,15 @@
 
                 for (const i in list) {
                     var editBtn = document.getElementsByClassName('edit')[i]
+                    var deleteBtn = document.getElementsByClassName('delete')[i]
+
+
                     editBtn.addEventListener('click', function () {
                         editItem(list[i])
+                    })
+
+                    deleteBtn.addEventListener('click', function () {
+                        deleteItem(list[i])
                     })
                 }
 
@@ -164,11 +171,23 @@
     })
 
 
-
     function editItem(item) {
         console.log('Item clicked', item)
         activeItem = item
         document.getElementById('title').value = activeItem.title
+    }
+
+    function deleteItem(item) {
+        console.log('Delete clicked')
+        fetch(`http://localhost:8000/api/task-delete/${item.id}/`, {
+            method: 'DELETE',
+            headers: {
+                'content-type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            }
+        }).then((response) => {
+            buildlist()
+        })
     }
 
 </script>
