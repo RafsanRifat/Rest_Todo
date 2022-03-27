@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer, UserRegistrationSerializer
 from .models import Task
 from rest_framework.views import APIView
 
@@ -57,3 +57,12 @@ def taskDelete(request, pk):
     task = Task.objects.get(id=pk)
     task.delete()
     return Response({'message': 'You have deleted the task successfully'})
+
+
+class UserRegistrationView(APIView):
+    def post(self, request, format=None):
+        serializer = UserRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({'msg': 'Registration successfull'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
