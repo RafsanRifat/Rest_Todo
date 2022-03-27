@@ -2,11 +2,13 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import TaskSerializer, UserRegistrationSerializer, UserLoginSerializer
+from .serializers import TaskSerializer, UserRegistrationSerializer, UserLoginSerializer, UserProfileViewSerializer, \
+    UserChangePasswordSerializer
 from .models import Task
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
 
 
 # Creating tokens manually
@@ -76,7 +78,8 @@ class UserRegistrationView(APIView):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            token = get_tokens_for_user(user)
+            token = get_tokens_for_user(user)  # [P]
+            decode_token(token, secret)
             return Response({'token': token, 'msg': 'Registration successfull'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -89,11 +92,13 @@ class UserLoginView(APIView):
             password = serializer.data.get('password')
             user = authenticate(email=email, password=password)
             if user is not None:
+                token = get_tokens_for_user(user)
                 login(request, user)
-                return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
+                return Response({"token": token, "message": "Login successful"}, status=status.HTTP_200_OK)
             else:
                 return Response({'errors': {'non_field_errors': ['email or password is not valid']}},
                                 status=status.HTTP_404_NOT_FOUND)
+
 
 # class UserLoginView(APIView):
 #     renderer_classes = [UserRenderer]
@@ -110,3 +115,20 @@ class UserLoginView(APIView):
 #         else:
 #             return Response({'errors': {'non_field_errors': ['Email or Password is not Valid']}},
 #                             status=status.HTTP_404_NOT_FOUND)
+
+
+class UserProfileView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        serializer = UserProfileViewSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserChangePasswordView(APIView):
+    # permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        serializer = UserChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response(serializer.data)

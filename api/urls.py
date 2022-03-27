@@ -1,5 +1,6 @@
 from django.urls import path, include
-from .views import apiOverview, taskList, taskDetail, taskCreate, taskUpdate, taskDelete, UserRegistrationView, UserLoginView
+from .views import apiOverview, taskList, taskDetail, taskCreate, taskUpdate, taskDelete, UserRegistrationView, \
+    UserLoginView, UserProfileView, UserChangePasswordView
 
 urlpatterns = [
     path('', apiOverview),
@@ -11,5 +12,7 @@ urlpatterns = [
 
     path('registration/', UserRegistrationView.as_view(), name='registrations'),
     path('login/', UserLoginView.as_view(), name='login'),
+    path('profileview/', UserProfileView.as_view(), name='profileview'),
+    path('changepassword/', UserChangePasswordView.as_view(), name='changepassword'),
 
 ]
