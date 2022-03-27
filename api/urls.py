@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import apiOverview, taskList, taskDetail, taskCreate, taskUpdate, taskDelete, UserRegistrationView
+from .views import apiOverview, taskList, taskDetail, taskCreate, taskUpdate, taskDelete, UserRegistrationView, UserLoginView
 
 urlpatterns = [
     path('', apiOverview),
@@ -10,5 +10,6 @@ urlpatterns = [
     path('task-delete/<str:pk>/', taskDelete, name='task-delete'),
 
     path('registration/', UserRegistrationView.as_view(), name='registrations'),
+    path('login/', UserLoginView.as_view(), name='login'),
 
 ]
