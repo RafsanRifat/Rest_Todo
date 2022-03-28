@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Task, User
+from django.contrib.auth.models import AbstractUser
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -47,7 +48,7 @@ class UserProfileViewSerializer(serializers.ModelSerializer):
 
 class UserChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=255, style={'input_type': 'password'}, write_only=True)
-    password = serializers.CharField(max_length=255, style={'input_type': 'password'}, write_only=True)
+    password2 = serializers.CharField(max_length=255, style={'input_type': 'password'}, write_only=True)
 
     class Meta:
         model = User
@@ -56,6 +57,7 @@ class UserChangePasswordSerializer(serializers.Serializer):
     def validate(self, data):
         password = data.get('password')
         password2 = data.get('password2')
+        user = self.context.get('user')
         if password != password2:
             raise serializers.ValidationError("Password and Confirm Password doesn't match")
         user.set_password(password)
