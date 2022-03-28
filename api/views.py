@@ -100,21 +100,7 @@ class UserLoginView(APIView):
                                 status=status.HTTP_404_NOT_FOUND)
 
 
-# class UserLoginView(APIView):
-#     renderer_classes = [UserRenderer]
-#
-#     def post(self, request, format=None):
-#         serializer = UserLoginSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         email = serializer.data.get('email')
-#         password = serializer.data.get('password')
-#         user = authenticate(email=email, password=password)
-#         if user is not None:
-#             token = get_tokens_for_user(user)
-#             return Response({'token': token, 'msg': 'Login Success'}, status=status.HTTP_200_OK)
-#         else:
-#             return Response({'errors': {'non_field_errors': ['Email or Password is not Valid']}},
-#                             status=status.HTTP_404_NOT_FOUND)
+
 
 
 class UserProfileView(APIView):
@@ -125,15 +111,15 @@ class UserProfileView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# class UserChangePasswordView(APIView):
-#     permission_classes = (IsAuthenticated,)
-#
-#     def post(self, request, format=None):
-#         serializer = UserChangePasswordSerializer(data=request.data)
-#         context = {'user': request.user}
-#         if serializer.is_valid(raise_exception=True):
-#             return Response({'msg': 'Password changed successfully'}, status=status.HTTP_200_OK)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class UserChangePasswordView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        serializer = UserChangePasswordSerializer(data=request.data)
+        context = {'user': request.user}
+        if serializer.is_valid(raise_exception=True):
+            return Response({'msg': 'Password changed successfully'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserChangePasswordView(APIView):
     permission_classes = (IsAuthenticated,)
