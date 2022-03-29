@@ -70,3 +70,11 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['email']
+
+    def validate(self, data):
+        email = data.get('email')
+        if User.objects.filter(email=email).exist():
+            pass
+        else:
+            raise ValidationErr('You are not a Register User')
+        return super().validate(data)
