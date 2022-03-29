@@ -1,6 +1,14 @@
 from rest_framework import serializers
 from .models import Task, User
 from django.contrib.auth.models import AbstractUser
+from rest_framework import serializers
+from api.models import User
+from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
+
+# from account.utils import Util
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -65,16 +73,56 @@ class UserChangePasswordSerializer(serializers.Serializer):
         return data
 
 
+# class SendPasswordResetEmailSerializer(serializers.Serializer):
+#     email: serializers.EmailField(max_length=255)
+#
+#     class Meta:
+#         fields = ['email']
+#
+#     def validate(self, data):
+#         email = data.get('email')
+#         print(email)
+#         if User.objects.filter(email=email).exists():
+#             user = User.objects.filter(email=email)
+#             print(user)
+#             uid = urlsafe_base64_encode(force_bytes(user.id))
+#             print('Encoded id', uid)
+#             token = PasswordResetTokenGenerator().make_token(user)
+#             print('password reset token', token)
+#             link = 'http://localhost:8000/api/resetpassword/' + uid + '/' + token
+#             print('password reset link', link)
+#             return data
+#
+#         else:
+#             raise serializers.ValidationError('You are not a Registered User')
+#         return super().validate(data)
+
+
 class SendPasswordResetEmailSerializer(serializers.Serializer):
-    email: serializers.EmailField(max_length=255)
+    email = serializers.EmailField(max_length=255)
 
     class Meta:
         fields = ['email']
 
-    def validate(self, data):
-        email = data.get('email')
-        if User.objects.filter(email=email).exist():
-            pass
+    def validate(self, attrs):
+        email = attrs.get('email')
+        print(email)
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            uid = urlsafe_base64_encode(force_bytes(user.id))
+            print('Encoded UID', uid)
+            token = PasswordResetTokenGenerator().make_token(user)
+            print('Password Reset Token', token)
+            link = 'http://localhost:3000/api/user/reset/' + uid + '/' + token
+            print('Password Reset Link', link)
+            # Send EMail
+            body = 'Click Following Link to Reset Your Password ' + link
+            data = {
+                'subject': 'Reset Your Password',
+                'body': body,
+                'to_email': user.email
+            }
+            # Util.send_email(data)
+            return attrs
         else:
-            raise ValidationErr('You are not a Register User')
-        return super().validate(data)
+            raise serializers.ValidationError('You are not a Registered User')
