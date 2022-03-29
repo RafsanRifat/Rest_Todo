@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import apiOverview, taskList, taskDetail, taskCreate, taskUpdate, taskDelete, UserRegistrationView, \
-    UserLoginView, UserProfileView, UserChangePasswordView
+    UserLoginView, UserProfileView, UserChangePasswordView, SendPasswordResetEmailView
 
 urlpatterns = [
     path('', apiOverview),
@@ -14,5 +14,6 @@ urlpatterns = [
     path('login/', UserLoginView.as_view(), name='login'),
     path('profileview/', UserProfileView.as_view(), name='profileview'),
     path('changepassword/', UserChangePasswordView.as_view(), name='changepassword'),
+    path('resetpassword/', SendPasswordResetEmailView.as_view(), name='resetpassword'),
 
 ]
